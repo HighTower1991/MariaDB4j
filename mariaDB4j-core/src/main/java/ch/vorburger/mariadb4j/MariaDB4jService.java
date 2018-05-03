@@ -32,16 +32,15 @@ import ch.vorburger.mariadb4j.springframework.MariaDB4jSpringService;
 /**
  * MariaDB4j starter "Service". This is basically just "sugar" - you can of course also use the DB
  * class directly instead of this convenience utility.
- * 
+ * <p>
  * <p>This class does not depend on Spring, and is intended for direct "JavaBean" like usage, and may
  * be useful for DI containers such as Guice. When using Spring, then the MariaDB4jSpringService may
  * be of interest. If you're using Spring Boot, then have a look at the MariaDB4jApplication.
- * 
+ * <p>
  * <p>The main() could be used typically from an IDE (waits for CR to shutdown..).
- * 
- * @see MariaDB4jSpringService
- * 
+ *
  * @author Michael Vorburger
+ * @see MariaDB4jSpringService
  */
 public class MariaDB4jService {
 
@@ -62,19 +61,27 @@ public class MariaDB4jService {
 
     @PostConstruct
     // note this is from javax.annotation, not a Spring Framework dependency
-    public void start() throws ManagedProcessException {
-        db = DB.newEmbeddedDB(getConfiguration().build());
-        db.start();
+    public void start() {
+        try {
+            db = DB.newEmbeddedDB(getConfiguration().build());
+            db.start();
+        } catch (ManagedProcessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PreDestroy
     // note this is from javax.annotation, not a Spring Framework dependency
-    public void stop() throws ManagedProcessException {
+    public void stop() {
         if (!isRunning())
             return;
-        db.stop();
-        db = null;
-        configBuilder = null;
+        try {
+            db.stop();
+            db = null;
+            configBuilder = null;
+        } catch (ManagedProcessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isRunning() {

@@ -52,7 +52,7 @@ public class MariaDB4jSpringService extends MariaDB4jService implements Lifecycl
     public final static String LIB_DIR = "mariaDB4j.libDir";
     public final static String UNPACK = "mariaDB4j.unpack";
 
-    protected ManagedProcessException lastException;
+    protected Exception lastException;
 
     @Value("${" + PORT + ":-1}")
     public void setDefaultPort(int port) {
@@ -94,7 +94,7 @@ public class MariaDB4jSpringService extends MariaDB4jService implements Lifecycl
     public void start() { // no throws ManagedProcessException
         try {
             super.start();
-        } catch (ManagedProcessException e) {
+        } catch (Exception e) {
             lastException = e;
             throw new IllegalStateException("MariaDB4jSpringService start() failed", e);
         }
@@ -104,13 +104,13 @@ public class MariaDB4jSpringService extends MariaDB4jService implements Lifecycl
     public void stop() { // no throws ManagedProcessException
         try {
             super.stop();
-        } catch (ManagedProcessException e) {
+        } catch (Exception e) {
             lastException = e;
             throw new IllegalStateException("MariaDB4jSpringService stop() failed", e);
         }
     }
 
-    public ManagedProcessException getLastException() {
+    public Exception getLastException() {
         return lastException;
     }
 
